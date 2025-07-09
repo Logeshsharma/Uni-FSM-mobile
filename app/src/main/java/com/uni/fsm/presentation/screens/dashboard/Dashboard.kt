@@ -1,4 +1,4 @@
-package com.uni.fsm.presentation.screens
+package com.uni.fsm.presentation.screens.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
