@@ -8,7 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.uni.fsm.data.remote.client.APIClient
 import com.uni.fsm.data.repository.LoginRepositoryImpl
 import com.uni.fsm.domain.usecase.LoginUseCase
-import com.uni.fsm.presentation.screens.DashboardScreen
+import com.uni.fsm.presentation.screens.dashboard.DashboardScreen
 import com.uni.fsm.presentation.screens.login.LoginScreen
 import com.uni.fsm.presentation.screens.login.LoginViewModel
 
@@ -23,7 +23,7 @@ fun AppNavigationHost(){
         composable("Dashboard") { DashboardScreen() }
         composable("login") {
             LoginScreen(viewModel = viewModel) {
-                navController.navigate("home") {
+                navController.navigate("Dashboard") {
                     popUpTo("login") { inclusive = true }
                 }
             }

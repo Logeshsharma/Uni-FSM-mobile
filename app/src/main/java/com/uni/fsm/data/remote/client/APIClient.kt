@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 object APIClient {
-    private const val BASE_URL = "https://bus-test-f592.onrender.com"
+    private const val BASE_URL = "https://uni-fsm.onrender.com"
 
     private val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
@@ -23,8 +23,6 @@ object APIClient {
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-
-//    fun createJobApiService(): JobApiService = retrofit.create(JobApiService::class.java)
 
     fun createLoginApiService(): LoginApiService = retrofit.create(LoginApiService::class.java)
 }
