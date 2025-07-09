@@ -19,8 +19,12 @@ fun AppNavigationHost(){
     val repository = remember { LoginRepositoryImpl(APIClient.createLoginApiService()) }
     val useCase = remember { LoginUseCase(repository) }
     val viewModel = remember { LoginViewModel(useCase) }
-    NavHost(navController= navController, startDestination = "login"){
-        composable("Dashboard") { DashboardScreen() }
+    NavHost(navController= navController, startDestination = "Dashboard"){
+        composable("Dashboard") { DashboardScreen {
+            navController.navigate("login") {
+                popUpTo("login") { inclusive = true }
+            }
+        } }
         composable("login") {
             LoginScreen(viewModel = viewModel) {
                 navController.navigate("Dashboard") {

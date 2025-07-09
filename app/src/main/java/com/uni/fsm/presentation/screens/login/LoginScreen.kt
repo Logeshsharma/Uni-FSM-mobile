@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -71,6 +73,11 @@ fun LoginScreen(
             onClick = {
                 viewModel.login(username, password, onSuccess)
             },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF000000),
+                contentColor = Color.White
+            ),
+            shape = RoundedCornerShape(12.dp),
             modifier = Modifier.fillMaxWidth(),
             enabled = !uiState.isLoading
         ) {
