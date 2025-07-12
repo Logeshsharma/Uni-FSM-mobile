@@ -16,7 +16,6 @@ import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -37,14 +36,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun DashboardScreen(onLogout: () -> Unit) {
-    AppBar(onLogout)
+fun DashboardScreen(onLogout: () -> Unit, onCreateJob: () -> Unit) {
+    AppBar(onLogout, onCreateJob)
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar(onLogout: () -> Unit) {
+fun AppBar(onLogout: () -> Unit, onCreateJob: () -> Unit) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -86,32 +85,32 @@ fun AppBar(onLogout: () -> Unit) {
 
 
         }) { innerPadding ->
-        DashboardContent(innerPadding)
+        DashboardContent(innerPadding, onCreateJob)
     }
 
 }
 
 @Composable
-fun DashboardContent(innerPadding: PaddingValues) {
+fun DashboardContent(innerPadding: PaddingValues, onCreateJob: () -> Unit) {
     val range = 1..100
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding)
-            .padding(horizontal = 20.dp )
+            .padding(horizontal = 20.dp)
 
     ) {
         Spacer(modifier = Modifier.height(25.dp))
         Text("Maintenance!", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 20.sp))
         Spacer(modifier = Modifier.height(16.dp))
-        Text("Schedule a job to employ the service", style = TextStyle( fontSize = 14.sp))
+        Text("Schedule a job to employ the service", style = TextStyle(fontSize = 14.sp))
         Button(
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFF000000),
                 contentColor = Color.White
             ),
             shape = RoundedCornerShape(12.dp),
-            onClick = { },
+            onClick = onCreateJob,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 10.dp)

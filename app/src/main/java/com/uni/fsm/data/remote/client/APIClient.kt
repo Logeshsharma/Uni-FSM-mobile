@@ -1,5 +1,6 @@
 package com.uni.fsm.data.remote.client
 
+import com.uni.fsm.data.remote.JobApiService
 import com.uni.fsm.data.remote.LoginApiService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -25,4 +26,6 @@ object APIClient {
         .build()
 
     fun createLoginApiService(): LoginApiService = retrofit.create(LoginApiService::class.java)
+
+    fun createJobApiService(): JobApiService = retrofit.create(JobApiService::class.java)
 }

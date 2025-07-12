@@ -1,0 +1,43 @@
+package com.uni.fsm.presentation.screens.create_job
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.uni.fsm.data.model.request.CreateJobRequest
+import com.uni.fsm.domain.usecase.CreateJobUseCase
+import kotlinx.coroutines.launch
+
+class CreateJobViewModel(private val useCase: CreateJobUseCase) : ViewModel() {
+    var title by mutableStateOf("")
+    var description by mutableStateOf("")
+    var category by mutableStateOf("")
+    var date by mutableStateOf("")
+    var time by mutableStateOf("")
+    var address by mutableStateOf("")
+    var isLoading by mutableStateOf(false)
+    var message by mutableStateOf<String?>(null)
+
+    fun createJob(userId: String) {
+        print("user----- ${userId}")
+        viewModelScope.launch {
+            isLoading = true
+            val request = CreateJobRequest(
+                user_id = userId,
+                title = title,
+                description = description,
+                job_category = category,
+                job_date = date,
+                job_time = time,
+                address = address
+            )
+            val result = useCase(request)
+            isLoading = false
+            message = result.fold(
+                onSuccess = { "Job created successfully!" },
+                onFailure = { it.localizedMessage ?: "Unknown error" }
+            )
+        }
+    }
+}
