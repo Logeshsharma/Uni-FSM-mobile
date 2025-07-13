@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,26 +47,33 @@ fun CreateJobScreen(viewModel: CreateJobViewModel, userId: String, onBack: () ->
             viewModel.message = null
         }
     }
+
+    LaunchedEffect(viewModel.navigateBackAfterSuccess) {
+        if (viewModel.navigateBackAfterSuccess) {
+            delay(500)
+            onBack()
+            viewModel.reset()
+        }
+    }
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFFD9D2FC),
-                    titleContentColor = Color(0xFF000000),
-                ),
-                title = {
-                    Text(
-                        "Create Job", maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 22.sp)
+            CenterAlignedTopAppBar(colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = Color(0xFFD9D2FC),
+                titleContentColor = Color(0xFF000000),
+            ), title = {
+                Text(
+                    "Create Job",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 22.sp)
+                )
+            }, navigationIcon = {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack, contentDescription = "Back"
                     )
-                }, navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack, contentDescription = "Back"
-                        )
-                    }
-                })
+                }
+            })
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
     ) { innerPadding ->
