@@ -33,14 +33,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun DashboardScreen(onLogout: () -> Unit, onCreateJob: () -> Unit) {
-    AppBar(onLogout, onCreateJob)
+fun DashboardScreen(
+    viewModel: JobListViewModel,
+    userId: String,
+    onLogout: () -> Unit,
+    onCreateJob: () -> Unit,
+) {
+    AppBar(viewModel = viewModel, userId = userId, onLogout, onCreateJob)
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar(onLogout: () -> Unit, onCreateJob: () -> Unit) {
+fun AppBar(
+    viewModel: JobListViewModel,
+    userId: String,
+    onLogout: () -> Unit,
+    onCreateJob: () -> Unit,
+) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -81,14 +91,18 @@ fun AppBar(onLogout: () -> Unit, onCreateJob: () -> Unit) {
 
 
         }) { innerPadding ->
-        DashboardContent(innerPadding, onCreateJob)
+        DashboardContent(innerPadding, viewModel = viewModel, userId = userId, onCreateJob)
     }
 
 }
 
 @Composable
-fun DashboardContent(innerPadding: PaddingValues, onCreateJob: () -> Unit) {
-//    val range = 1..100
+fun DashboardContent(
+    innerPadding: PaddingValues,
+    viewModel: JobListViewModel,
+    userId: String,
+    onCreateJob: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -118,7 +132,15 @@ fun DashboardContent(innerPadding: PaddingValues, onCreateJob: () -> Unit) {
             color = Color.Gray,
             thickness = 2.dp
         )
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(14.dp))
+        Text(
+            text = "Job History",
+            modifier = Modifier.padding(bottom = 20.dp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 22.sp)
+        )
+        JobListScreen(viewModel = viewModel, userId = userId)
 
 //        LazyColumn(
 //            modifier = Modifier

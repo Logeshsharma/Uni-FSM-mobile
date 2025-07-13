@@ -2,7 +2,9 @@ package com.uni.fsm.data.repository
 
 import com.uni.fsm.data.model.request.CreateJobRequest
 import com.uni.fsm.data.model.response.CreateJobResponse
+import com.uni.fsm.data.model.response.toDomain
 import com.uni.fsm.data.remote.JobApiService
+import com.uni.fsm.domain.model.Job
 import com.uni.fsm.domain.repository.JobRepository
 
 class JobRepositoryImpl(private val apiService: JobApiService) : JobRepository {
@@ -18,6 +20,20 @@ class JobRepositoryImpl(private val apiService: JobApiService) : JobRepository {
                     )
                 )
             } else Result.failure(Exception("Error: ${response.code()}"))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getJobs(userId: String, role: String): Result<List<Job>> {
+        return try {
+            val response = apiService.getJobs(userId, role)
+            if (response.isSuccessful) {
+                val jobs = response.body()?.map { it.toDomain() } ?: emptyList()
+                Result.success(jobs)
+            } else {
+                Result.failure(Exception("Failed to fetch jobs"))
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }
