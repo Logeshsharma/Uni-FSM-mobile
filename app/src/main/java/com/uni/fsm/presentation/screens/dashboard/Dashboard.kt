@@ -1,6 +1,5 @@
 package com.uni.fsm.presentation.screens.dashboard
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
@@ -20,7 +18,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -47,10 +44,9 @@ fun AppBar(onLogout: () -> Unit, onCreateJob: () -> Unit) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-
             CenterAlignedTopAppBar(
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    containerColor = Color(0xFFD9D2FC),
                     titleContentColor = Color(0xFF000000),
                 ),
                 title = {
@@ -92,7 +88,7 @@ fun AppBar(onLogout: () -> Unit, onCreateJob: () -> Unit) {
 
 @Composable
 fun DashboardContent(innerPadding: PaddingValues, onCreateJob: () -> Unit) {
-    val range = 1..100
+//    val range = 1..100
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -124,16 +120,16 @@ fun DashboardContent(innerPadding: PaddingValues, onCreateJob: () -> Unit) {
         )
         Spacer(modifier = Modifier.height(10.dp))
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(range.count()) { index ->
-                Text(text = "- List item number ${index + 1}")
-            }
-        }
+//        LazyColumn(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .weight(1f),
+//            verticalArrangement = Arrangement.spacedBy(8.dp)
+//        ) {
+//            items(range.count()) { index ->
+//                Text(text = "- List item number ${index + 1}")
+//            }
+//        }
 
     }
 }

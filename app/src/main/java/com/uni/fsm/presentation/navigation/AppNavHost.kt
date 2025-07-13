@@ -33,7 +33,6 @@ fun AppNavigationHost() {
     NavHost(navController = navController, startDestination = "login") {
         composable("login") {
             LoginScreen(viewModel = loginViewModel) { userId ->
-                Log.i("debug - Logesh", "LoginScreen: ${userId}")
                 navController.navigate("Dashboard/$userId") {
                     popUpTo("login") { inclusive = true }
                 }
@@ -45,16 +44,13 @@ fun AppNavigationHost() {
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
             Log.i("debug - Logesh", "AppNavigationHost: ${userId}")
-            DashboardScreen(
-                onLogout = {
-                    navController.navigate("login") {
-                        popUpTo("Dashboard/{userId}") { inclusive = true }
-                    }
-                },
-                onCreateJob = {
-                    navController.navigate("create_job/$userId")
+            DashboardScreen(onLogout = {
+                navController.navigate("login") {
+                    popUpTo("Dashboard/{userId}") { inclusive = true }
                 }
-            )
+            }, onCreateJob = {
+                navController.navigate("create_job/$userId")
+            })
         }
 
         composable(
@@ -62,7 +58,9 @@ fun AppNavigationHost() {
             arguments = listOf(navArgument("userId") { type = NavType.StringType })
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
-            CreateJobScreen(viewModel = createJobViewModel, userId = userId)
+            CreateJobScreen(viewModel = createJobViewModel, userId = userId) {
+                navController.popBackStack()
+            }
         }
     }
 }
