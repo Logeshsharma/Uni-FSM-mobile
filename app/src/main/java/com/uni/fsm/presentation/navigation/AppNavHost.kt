@@ -35,7 +35,7 @@ fun AppNavigationHost() {
     val jobListUseCase = remember { GetJobListUseCase(repo) }
     val jobListViewModel = remember { JobListViewModel(jobListUseCase) }
 
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(navController = navController, startDestination = "Dashboard/a6Xfy4BgVq1oqxLOIpzc") {
         composable("login") {
             LoginScreen(viewModel = loginViewModel) { userId ->
                 navController.navigate("Dashboard/$userId") {

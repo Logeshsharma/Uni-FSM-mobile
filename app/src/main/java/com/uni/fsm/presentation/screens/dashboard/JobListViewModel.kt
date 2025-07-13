@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.uni.fsm.domain.model.Job
 import com.uni.fsm.domain.usecase.GetJobListUseCase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class JobListViewModel(private val useCase: GetJobListUseCase) : ViewModel() {
@@ -18,6 +19,7 @@ class JobListViewModel(private val useCase: GetJobListUseCase) : ViewModel() {
         viewModelScope.launch {
             isLoading = true
             val result = useCase(userId, role = "Student")
+            delay(1000)
             result.fold(
                 onSuccess = { jobs = it },
                 onFailure = { errorMessage = it.message }

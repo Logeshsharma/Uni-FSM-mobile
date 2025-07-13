@@ -132,8 +132,14 @@ fun DashboardContent(
             color = Color.Gray,
             thickness = 2.dp
         )
-        Spacer(modifier = Modifier.height(10.dp))
-
+        Spacer(modifier = Modifier.height(14.dp))
+        Text(
+            text = "Job History",
+            modifier = Modifier.padding(bottom = 20.dp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 22.sp)
+        )
         JobListScreen(viewModel = viewModel, userId = userId)
 
 //        LazyColumn(

@@ -1,7 +1,7 @@
 package com.uni.fsm.data.model.response
 
 import com.uni.fsm.domain.model.Job
-import com.uni.fsm.domain.model.User
+import com.uni.fsm.domain.model.JobUser
 
 data class JobResponse(
     val job_id: String?,
@@ -12,10 +12,11 @@ data class JobResponse(
     val job_time: String?,
     val address: String?,
     val status: String?,
-    val created_by: CreatedByDto?,
+    val created_by: UserDto?,
+    val assigned_to: UserDto?,
 )
 
-data class CreatedByDto(
+data class UserDto(
     val user_id: String?,
     val username: String?,
 )
@@ -30,11 +31,13 @@ fun JobResponse.toDomain(): Job {
         time = job_time ?: "",
         address = address ?: "",
         status = status ?: "",
-        createdBy = User(
+        createdBy = JobUser(
             user_id = created_by?.user_id ?: "",
             username = created_by?.username ?: "",
-            email = "",
-            role = ""
+        ),
+        assigned_to = JobUser(
+            user_id = assigned_to?.user_id ?: "",
+            username = assigned_to?.username ?: "Not yet Assigned",
         )
     )
 }

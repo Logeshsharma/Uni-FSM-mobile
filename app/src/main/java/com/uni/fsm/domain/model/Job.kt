@@ -9,7 +9,12 @@ data class Job(
     val time: String,
     val address: String,
     val status: String,
-    val createdBy: User
+    val createdBy: JobUser,
+    val assigned_to: JobUser,
 )
 
+data class JobUser(
+    val user_id: String,
+    val username: String,
+)
 
