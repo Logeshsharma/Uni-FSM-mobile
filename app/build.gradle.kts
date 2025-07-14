@@ -72,5 +72,8 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
     implementation (libs.androidx.material.icons.extended)
+    implementation (libs.androidx.material)
+    implementation (libs.material3)
+    implementation (libs.material)
 
 }
