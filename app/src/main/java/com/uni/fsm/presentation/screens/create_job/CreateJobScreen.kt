@@ -173,19 +173,10 @@ fun CreateJobForm(viewModel: CreateJobViewModel, userId: String, innerPadding: P
                 focusedLabelColor = Color(0xFFAC9BF8),
             ),
             label = { Text("Title") })
-
-        OutlinedTextField(value = viewModel.category,
-            onValueChange = { viewModel.category = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 10.dp, horizontal = 15.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFFAC9BF8),
-                unfocusedBorderColor = Color(0xFF000000),
-                focusedLabelColor = Color(0xFFAC9BF8),
-            ),
-            label = { Text("Category") })
+        CategoryDropdown(
+            selectedCategory = viewModel.category,
+            onCategorySelected = { viewModel.category = it }
+        )
         OutlinedTextField(
             value = viewModel.date,
             onValueChange = { },
