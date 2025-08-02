@@ -142,16 +142,5 @@ fun DashboardContent(
         )
         JobListScreen(viewModel = viewModel, userId = userId)
 
-//        LazyColumn(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .weight(1f),
-//            verticalArrangement = Arrangement.spacedBy(8.dp)
-//        ) {
-//            items(range.count()) { index ->
-//                Text(text = "- List item number ${index + 1}")
-//            }
-//        }
-
     }
 }
