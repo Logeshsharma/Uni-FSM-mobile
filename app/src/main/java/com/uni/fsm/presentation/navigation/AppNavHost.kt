@@ -1,15 +1,22 @@
 package com.uni.fsm.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.uni.fsm.data.local.SessionManager
 import com.uni.fsm.data.remote.client.APIClient
 import com.uni.fsm.data.repository.JobRepositoryImpl
 import com.uni.fsm.data.repository.LoginRepositoryImpl
+import com.uni.fsm.domain.model.User
 import com.uni.fsm.domain.usecase.CreateJobUseCase
 import com.uni.fsm.domain.usecase.GetJobListUseCase
 import com.uni.fsm.domain.usecase.LoginUseCase
@@ -19,10 +26,15 @@ import com.uni.fsm.presentation.screens.dashboard.DashboardScreen
 import com.uni.fsm.presentation.screens.dashboard.JobListViewModel
 import com.uni.fsm.presentation.screens.login.LoginScreen
 import com.uni.fsm.presentation.screens.login.LoginViewModel
+import kotlinx.coroutines.launch
 
 
 @Composable
 fun AppNavigationHost() {
+    val context = LocalContext.current
+    val sessionViewModel: SessionViewModel = viewModel(factory = SessionViewModelFactory(context))
+    val user by sessionViewModel.session.collectAsState()
+
     val navController = rememberNavController()
     val repository = remember { LoginRepositoryImpl(APIClient.createLoginApiService()) }
     val loginUseCase = remember { LoginUseCase(repository) }
@@ -35,7 +47,10 @@ fun AppNavigationHost() {
     val jobListUseCase = remember { GetJobListUseCase(repo) }
     val jobListViewModel = remember { JobListViewModel(jobListUseCase) }
 
-    NavHost(navController = navController, startDestination = "login") {
+    val coroutineScope = rememberCoroutineScope()
+
+
+    NavHost(navController = navController, startDestination = getStartDestination(user)) {
         composable("login") {
             LoginScreen(viewModel = loginViewModel) { userId ->
                 navController.navigate("Dashboard/$userId") {
@@ -53,6 +68,9 @@ fun AppNavigationHost() {
                     navController.navigate("login") {
                         popUpTo("Dashboard/{userId}") { inclusive = true }
                     }
+                    coroutineScope.launch {
+                        SessionManager.clear(context)
+                    }
                 }, onCreateJob = {
                     navController.navigate("create_job/$userId")
                 })
@@ -67,5 +85,14 @@ fun AppNavigationHost() {
                 navController.popBackStack()
             }
         }
+
+    }
+
+}
+
+fun getStartDestination(session: User?): String {
+    return when {
+        session == null -> "login"
+        else -> "Dashboard/${session.user_id}"
     }
 }

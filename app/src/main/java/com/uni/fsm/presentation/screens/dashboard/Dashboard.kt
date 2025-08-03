@@ -23,14 +23,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.uni.fsm.presentation.navigation.SessionViewModel
+import com.uni.fsm.presentation.navigation.SessionViewModelFactory
 
 @Composable
 fun DashboardScreen(
@@ -51,46 +57,46 @@ fun AppBar(
     onLogout: () -> Unit,
     onCreateJob: () -> Unit,
 ) {
+    val context = LocalContext.current
+    val sessionViewModel: SessionViewModel = viewModel(factory = SessionViewModelFactory(context))
+    val user by sessionViewModel.session.collectAsState()
+
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-    Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFFD9D2FC),
-                    titleContentColor = Color(0xFF000000),
-                ),
-                title = {
-                    Text(
-                        "FSM-StuD",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 22.sp)
+    Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), topBar = {
+        CenterAlignedTopAppBar(colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = Color(0xFFD9D2FC),
+            titleContentColor = Color(0xFF000000),
+        ), title = {
+
+            Text(
+                if (user?.role == "Student") "FSM-StuD" else "FSM-Tech",
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 22.sp)
+
+            )
+        }, navigationIcon = {
+            IconButton(onClick = { }) {
+                Icon(
+                    imageVector = Icons.Rounded.Person,
+                    contentDescription = "Profile",
+                    tint = Color(0xFF000000),
+                )
+            }
+        }, actions = {
+            IconButton(onClick = onLogout) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.Logout,
+                    contentDescription = "Settings",
+                    tint = Color(0xFF000000),
 
                     )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { }) {
-                        Icon(
-                            imageVector = Icons.Rounded.Person,
-                            contentDescription = "Profile",
-                            tint = Color(0xFF000000),
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = onLogout) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.Logout,
-                            contentDescription = "Settings",
-                            tint = Color(0xFF000000),
-                        )
-                    }
-                },
-                scrollBehavior = scrollBehavior
-            )
+            }
+        }, scrollBehavior = scrollBehavior
+        )
 
 
-        }) { innerPadding ->
+    }) { innerPadding ->
         DashboardContent(innerPadding, viewModel = viewModel, userId = userId, onCreateJob)
     }
 
@@ -101,8 +107,9 @@ fun DashboardContent(
     innerPadding: PaddingValues,
     viewModel: JobListViewModel,
     userId: String,
-    onCreateJob: () -> Unit,
+    onCreateJob: () -> Unit
 ) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -116,8 +123,7 @@ fun DashboardContent(
         Text("Schedule a job to employ the service", style = TextStyle(fontSize = 14.sp))
         Button(
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF000000),
-                contentColor = Color.White
+                containerColor = Color(0xFF000000), contentColor = Color.White
             ),
             shape = RoundedCornerShape(12.dp),
             onClick = onCreateJob,
@@ -129,8 +135,7 @@ fun DashboardContent(
         }
         Spacer(modifier = Modifier.height(10.dp))
         HorizontalDivider(
-            color = Color.Gray,
-            thickness = 2.dp
+            color = Color.Gray, thickness = 2.dp
         )
         Spacer(modifier = Modifier.height(14.dp))
         Text(

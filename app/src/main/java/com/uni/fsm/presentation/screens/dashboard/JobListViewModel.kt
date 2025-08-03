@@ -15,10 +15,11 @@ class JobListViewModel(private val useCase: GetJobListUseCase) : ViewModel() {
     var isLoading by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
 
-    fun loadJobs(userId: String) {
+    fun loadJobs(userId: String, role : String) {
         viewModelScope.launch {
+
             isLoading = true
-            val result = useCase(userId, role = "Student")
+            val result = useCase(userId, role = role)
             delay(1000)
             result.fold(
                 onSuccess = { jobs = it },

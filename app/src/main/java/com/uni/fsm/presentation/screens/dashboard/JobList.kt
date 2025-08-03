@@ -27,19 +27,32 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.uni.fsm.domain.model.Job
+import com.uni.fsm.presentation.navigation.SessionViewModel
+import com.uni.fsm.presentation.navigation.SessionViewModelFactory
 
 @Composable
 fun JobListScreen(viewModel: JobListViewModel, userId: String) {
-    LaunchedEffect(Unit) {
-        viewModel.loadJobs(userId)
+    val context = LocalContext.current
+    val sessionViewModel: SessionViewModel = viewModel(factory = SessionViewModelFactory(context))
+    val user by sessionViewModel.session.collectAsState()
+    LaunchedEffect(user) {
+        user?.let {
+//            println("role: ${it.role}") // should print value now
+            viewModel.loadJobs(it.user_id, it.role)
+        }
     }
+
     if (viewModel.isLoading) {
         Box(
             modifier = Modifier
