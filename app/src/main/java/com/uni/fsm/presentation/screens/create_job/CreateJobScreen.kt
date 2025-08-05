@@ -13,21 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,17 +28,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.uni.fsm.presentation.common.CommonAppBarScaffold
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateJobScreen(viewModel: CreateJobViewModel, userId: String, onBack: () -> Unit) {
     val snackBarHostState = remember { SnackbarHostState() }
@@ -67,28 +54,12 @@ fun CreateJobScreen(viewModel: CreateJobViewModel, userId: String, onBack: () ->
             viewModel.reset()
         }
     }
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                containerColor = Color(0xFFD9D2FC),
-                titleContentColor = Color(0xFF000000),
-            ), title = {
-                Text(
-                    "Create Job",
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 22.sp)
-                )
-            }, navigationIcon = {
-                IconButton(onClick = onBack) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack, contentDescription = "Back"
-                    )
-                }
-            })
-        },
-        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
-    ) { innerPadding ->
+    CommonAppBarScaffold(
+        title = "Create Job",
+        onBack = onBack,
+        snackBarHostState = snackBarHostState,
+
+        ) { innerPadding ->
         CreateJobForm(viewModel = viewModel, userId = userId, innerPadding = innerPadding)
     }
 }

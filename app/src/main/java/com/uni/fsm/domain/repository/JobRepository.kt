@@ -7,4 +7,7 @@ import com.uni.fsm.domain.model.Job
 interface JobRepository {
     suspend fun createJob(jobRequest: CreateJobRequest): Result<CreateJobResponse>
     suspend fun getJobs(userId: String, role: String): Result<List<Job>>
+
+    suspend fun getJobDetails(jobId: String) : Result<Job>
+
 }

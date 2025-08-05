@@ -18,12 +18,15 @@ import com.uni.fsm.data.repository.JobRepositoryImpl
 import com.uni.fsm.data.repository.LoginRepositoryImpl
 import com.uni.fsm.domain.model.User
 import com.uni.fsm.domain.usecase.CreateJobUseCase
+import com.uni.fsm.domain.usecase.GetJobDetailsUseCase
 import com.uni.fsm.domain.usecase.GetJobListUseCase
 import com.uni.fsm.domain.usecase.LoginUseCase
 import com.uni.fsm.presentation.screens.create_job.CreateJobScreen
 import com.uni.fsm.presentation.screens.create_job.CreateJobViewModel
 import com.uni.fsm.presentation.screens.dashboard.DashboardScreen
 import com.uni.fsm.presentation.screens.dashboard.JobListViewModel
+import com.uni.fsm.presentation.screens.job_detail.JobDetailScreen
+import com.uni.fsm.presentation.screens.job_detail.JobDetailViewModel
 import com.uni.fsm.presentation.screens.login.LoginScreen
 import com.uni.fsm.presentation.screens.login.LoginViewModel
 import kotlinx.coroutines.launch
@@ -47,6 +50,9 @@ fun AppNavigationHost() {
     val jobListUseCase = remember { GetJobListUseCase(repo) }
     val jobListViewModel = remember { JobListViewModel(jobListUseCase) }
 
+    val getJobDetailsUseCase = remember { GetJobDetailsUseCase(repo) }
+    val jobDetailViewModel = remember { JobDetailViewModel(getJobDetailsUseCase) }
+
     val coroutineScope = rememberCoroutineScope()
 
 
@@ -63,7 +69,7 @@ fun AppNavigationHost() {
             arguments = listOf(navArgument("userId") { type = NavType.StringType })
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
-            DashboardScreen(viewModel = jobListViewModel, userId,
+            DashboardScreen(viewModel = jobListViewModel,
                 onLogout = {
                     navController.navigate("login") {
                         popUpTo("Dashboard/{userId}") { inclusive = true }
@@ -73,7 +79,13 @@ fun AppNavigationHost() {
                     }
                 }, onCreateJob = {
                     navController.navigate("create_job/$userId")
-                })
+                },
+                onJobClicked = { job ->
+                    val jobId = job.id
+                    navController.navigate("job_detail/$jobId")
+                }
+
+            )
         }
 
         composable(
@@ -84,6 +96,17 @@ fun AppNavigationHost() {
             CreateJobScreen(viewModel = createJobViewModel, userId = userId) {
                 navController.popBackStack()
             }
+        }
+
+        composable(
+            "job_detail/{jobId}",
+            arguments = listOf(navArgument("jobId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val jobId = backStackEntry.arguments?.getString("jobId") ?: ""
+            JobDetailScreen(jobId = jobId,
+                viewModel = jobDetailViewModel, onBack = {
+                    navController.popBackStack()
+                })
         }
 
     }

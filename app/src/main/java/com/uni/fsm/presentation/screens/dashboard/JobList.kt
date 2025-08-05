@@ -42,13 +42,12 @@ import com.uni.fsm.presentation.navigation.SessionViewModel
 import com.uni.fsm.presentation.navigation.SessionViewModelFactory
 
 @Composable
-fun JobListScreen(viewModel: JobListViewModel, userId: String) {
+fun JobListScreen(viewModel: JobListViewModel, onJobClicked: (Job) -> Unit) {
     val context = LocalContext.current
     val sessionViewModel: SessionViewModel = viewModel(factory = SessionViewModelFactory(context))
     val user by sessionViewModel.session.collectAsState()
     LaunchedEffect(user) {
         user?.let {
-//            println("role: ${it.role}") // should print value now
             viewModel.loadJobs(it.user_id, it.role)
         }
     }
@@ -66,7 +65,7 @@ fun JobListScreen(viewModel: JobListViewModel, userId: String) {
     } else {
         LazyColumn {
             items(viewModel.jobs.count()) { index ->
-                JobCard(viewModel.jobs[index])
+                JobCard(viewModel.jobs[index], onJobClicked)
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
@@ -78,8 +77,9 @@ fun JobListScreen(viewModel: JobListViewModel, userId: String) {
 }
 
 @Composable
-fun JobCard(job: Job) {
+fun JobCard(job: Job, onJobClicked: (Job) -> Unit) {
     Card(
+        onClick = { onJobClicked(job) },
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight(),
@@ -91,6 +91,7 @@ fun JobCard(job: Job) {
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(12.dp)
+
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(modifier = Modifier.fillMaxWidth()) {
