@@ -21,6 +21,7 @@ import com.uni.fsm.domain.usecase.CreateJobUseCase
 import com.uni.fsm.domain.usecase.GetJobDetailsUseCase
 import com.uni.fsm.domain.usecase.GetJobListUseCase
 import com.uni.fsm.domain.usecase.LoginUseCase
+import com.uni.fsm.domain.usecase.StartJobUseCase
 import com.uni.fsm.presentation.screens.create_job.CreateJobScreen
 import com.uni.fsm.presentation.screens.create_job.CreateJobViewModel
 import com.uni.fsm.presentation.screens.dashboard.DashboardScreen
@@ -39,19 +40,20 @@ fun AppNavigationHost() {
     val user by sessionViewModel.session.collectAsState()
 
     val navController = rememberNavController()
-    val repository = remember { LoginRepositoryImpl(APIClient.createLoginApiService()) }
-    val loginUseCase = remember { LoginUseCase(repository) }
+    val loginRepository = remember { LoginRepositoryImpl(APIClient.createLoginApiService()) }
+    val loginUseCase = remember { LoginUseCase(loginRepository) }
     val loginViewModel = remember { LoginViewModel(loginUseCase) }
 
-    val repo = remember { JobRepositoryImpl(APIClient.createJobApiService()) }
-    val createJobUseCase = remember { CreateJobUseCase(repo) }
+    val jobRepository = remember { JobRepositoryImpl(APIClient.createJobApiService()) }
+    val createJobUseCase = remember { CreateJobUseCase(jobRepository) }
     val createJobViewModel = remember { CreateJobViewModel(createJobUseCase) }
 
-    val jobListUseCase = remember { GetJobListUseCase(repo) }
+    val jobListUseCase = remember { GetJobListUseCase(jobRepository) }
     val jobListViewModel = remember { JobListViewModel(jobListUseCase) }
 
-    val getJobDetailsUseCase = remember { GetJobDetailsUseCase(repo) }
-    val jobDetailViewModel = remember { JobDetailViewModel(getJobDetailsUseCase) }
+    val getJobDetailsUseCase = remember { GetJobDetailsUseCase(jobRepository) }
+    val startJobUseCase = remember { StartJobUseCase(jobRepository) }
+    val jobDetailViewModel = remember { JobDetailViewModel(getJobDetailsUseCase, startJobUseCase) }
 
     val coroutineScope = rememberCoroutineScope()
 

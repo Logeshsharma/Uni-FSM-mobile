@@ -67,7 +67,9 @@ fun JobDetailScreen(
                     job = it,
                     innerPadding = innerPadding,
                     onAttachImage = onAttachImage,
-                    onCompleteJob = onCompleteJob
+                    onCompleteJob = { viewModel.startJob(job.id, job.assigned_to.user_id) },
+                    onStartJob = { viewModel.startJob(job.id, job.assigned_to.user_id) }
+
                 )
             } ?: Text(viewModel.errorMessage ?: "Error", color = Color.Red)
 
@@ -80,8 +82,8 @@ fun JobDetailScreen(
 fun JobDetailUI(
     job: Job,
     onAttachImage: () -> Unit = {},
-    onStartJob: () -> Unit = {},
-    onCompleteJob: () -> Unit = {},
+    onStartJob: () -> Unit,
+    onCompleteJob: () -> Unit,
     innerPadding: PaddingValues,
 ) {
     val onClickAction = when (job.status) {
@@ -132,15 +134,16 @@ fun JobDetailUI(
                 modifier = Modifier
                     .background(
                         color = when (job.status) {
-                            "Completed" -> Color(0xFF4CAF50)
-                            "OnProcess" -> Color(0xFFFFC107)
+                            "Assigned" -> Color(0xFF1684DA)
+                            "OnProcess" -> Color(0xFF452BCC)
+                            "Completed" -> Color(0xFF388E3C)
                             else -> Color.LightGray
                         },
                         shape = RoundedCornerShape(12.dp)
                     )
                     .padding(horizontal = 12.dp, vertical = 6.dp),
                 color = Color.White,
-                fontSize = 12.sp
+                fontSize = 14.sp
             )
         }
 
@@ -164,9 +167,6 @@ fun JobDetailUI(
         Text(job.description, fontSize = 14.sp, color = Color.Black)
 
         Spacer(modifier = Modifier.height(30.dp))
-
-        // Complete Job Button
-
 
         if (buttonText != null && onClickAction != null) {
             Button(

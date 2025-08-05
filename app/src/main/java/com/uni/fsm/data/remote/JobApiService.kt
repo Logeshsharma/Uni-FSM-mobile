@@ -1,6 +1,8 @@
 package com.uni.fsm.data.remote
 
 import com.uni.fsm.data.model.request.CreateJobRequest
+import com.uni.fsm.data.model.request.StartJobRequest
+import com.uni.fsm.data.model.response.CommonResponse
 import com.uni.fsm.data.model.response.CreateJobResponse
 import com.uni.fsm.data.model.response.JobResponse
 import retrofit2.Response
@@ -21,5 +23,8 @@ interface JobApiService {
 
     @GET("/mapi/job_detail")
     suspend fun getJobDetail(@Query("job_id") jobId: String): Response<JobResponse>
+
+    @POST("/mapi/start_job")
+    suspend fun startJob(@Body request: StartJobRequest): Response<CommonResponse>
 
 }
