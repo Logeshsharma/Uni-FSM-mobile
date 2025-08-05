@@ -1,6 +1,7 @@
 package com.uni.fsm.data.repository
 
 import com.uni.fsm.data.model.request.CreateJobRequest
+import com.uni.fsm.data.model.request.StartJobRequest
 import com.uni.fsm.data.model.response.CreateJobResponse
 import com.uni.fsm.data.model.response.toDomain
 import com.uni.fsm.data.remote.JobApiService
@@ -51,4 +52,19 @@ class JobRepositoryImpl(private val apiService: JobApiService) : JobRepository {
             Result.failure(e)
         }
     }
+
+    override suspend fun startJob(jobId: String, technicianId: String): Result<String> {
+        return try {
+            val response = apiService.startJob(StartJobRequest(jobId, technicianId))
+            if (response.isSuccessful) {
+                val message = response.body()?.message ?: "Success"
+                Result.success(message)
+            } else {
+                Result.failure(Exception("Failed to start job"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 }
