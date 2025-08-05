@@ -7,6 +7,6 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface LoginApiService {
-    @POST("/login_mobile")
+    @POST("/mapi/login")
     suspend fun loginUser(@Body loginRequest: LoginRequest): Response<LoginResponse>
 }

@@ -35,17 +35,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.uni.fsm.domain.model.Job
 import com.uni.fsm.presentation.navigation.SessionViewModel
 import com.uni.fsm.presentation.navigation.SessionViewModelFactory
 
 @Composable
 fun DashboardScreen(
     viewModel: JobListViewModel,
-    userId: String,
     onLogout: () -> Unit,
     onCreateJob: () -> Unit,
+    onJobClicked: (Job) -> Unit
 ) {
-    AppBar(viewModel = viewModel, userId = userId, onLogout, onCreateJob)
+    AppBar(viewModel = viewModel,  onLogout, onCreateJob ,onJobClicked)
 }
 
 
@@ -53,9 +54,9 @@ fun DashboardScreen(
 @Composable
 fun AppBar(
     viewModel: JobListViewModel,
-    userId: String,
     onLogout: () -> Unit,
     onCreateJob: () -> Unit,
+    onJobClicked: (Job) -> Unit
 ) {
     val context = LocalContext.current
     val sessionViewModel: SessionViewModel = viewModel(factory = SessionViewModelFactory(context))
@@ -89,7 +90,6 @@ fun AppBar(
                     imageVector = Icons.AutoMirrored.Rounded.Logout,
                     contentDescription = "Settings",
                     tint = Color(0xFF000000),
-
                     )
             }
         }, scrollBehavior = scrollBehavior
@@ -97,7 +97,7 @@ fun AppBar(
 
 
     }) { innerPadding ->
-        DashboardContent(innerPadding, viewModel = viewModel, userId = userId, onCreateJob)
+        DashboardContent(innerPadding, viewModel = viewModel, onCreateJob, onJobClicked = onJobClicked)
     }
 
 }
@@ -106,8 +106,8 @@ fun AppBar(
 fun DashboardContent(
     innerPadding: PaddingValues,
     viewModel: JobListViewModel,
-    userId: String,
-    onCreateJob: () -> Unit
+    onCreateJob: () -> Unit,
+    onJobClicked : (Job) -> Unit
 ) {
 
     Column(
@@ -145,7 +145,6 @@ fun DashboardContent(
             overflow = TextOverflow.Ellipsis,
             style = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 22.sp)
         )
-        JobListScreen(viewModel = viewModel, userId = userId)
-
+        JobListScreen(viewModel = viewModel, onJobClicked = onJobClicked)
     }
 }

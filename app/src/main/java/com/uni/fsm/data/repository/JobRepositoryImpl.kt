@@ -38,4 +38,17 @@ class JobRepositoryImpl(private val apiService: JobApiService) : JobRepository {
             Result.failure(e)
         }
     }
+
+    override suspend fun getJobDetails(jobId: String): Result<Job> {
+        return try {
+            val response = apiService.getJobDetail(jobId)
+            if (response.isSuccessful) {
+                val jobResponse = response.body() ?: throw Exception("Empty response")
+
+                Result.success(jobResponse.toDomain())
+            } else Result.failure(Exception("Failed to fetch job detail"))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
