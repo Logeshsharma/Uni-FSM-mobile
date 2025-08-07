@@ -34,7 +34,7 @@ fun JobDetailScreen(
     jobId: String,
     onBack: () -> Unit,
     viewModel: JobDetailViewModel,
-    onAttachImage: () -> Unit = {},
+    navUploadImage: (techId: String) -> Unit = {},
     onCompleteJob: () -> Unit = {},
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
@@ -66,7 +66,7 @@ fun JobDetailScreen(
                 JobDetailUI(
                     job = it,
                     innerPadding = innerPadding,
-                    onAttachImage = onAttachImage,
+                    navUploadImage = navUploadImage,
                     onCompleteJob = { viewModel.startJob(job.id, job.assigned_to.user_id) },
                     onStartJob = { viewModel.startJob(job.id, job.assigned_to.user_id) }
 
@@ -81,7 +81,7 @@ fun JobDetailScreen(
 @Composable
 fun JobDetailUI(
     job: Job,
-    onAttachImage: () -> Unit = {},
+    navUploadImage: (techId: String) -> Unit = {},
     onStartJob: () -> Unit,
     onCompleteJob: () -> Unit,
     innerPadding: PaddingValues,
@@ -103,7 +103,6 @@ fun JobDetailUI(
             .padding(16.dp)
             .padding(innerPadding)
     ) {
-
 
         // Job ID
         Text(
@@ -167,6 +166,20 @@ fun JobDetailUI(
         Text(job.description, fontSize = 14.sp, color = Color.Black)
 
         Spacer(modifier = Modifier.height(30.dp))
+
+        Button(
+            onClick = { navUploadImage(job.assigned_to.user_id) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF000000),
+                contentColor = Color.White
+            )
+        ) {
+            Text("Upload image", fontSize = 16.sp, color = Color.White)
+        }
 
         if (buttonText != null && onClickAction != null) {
             Button(

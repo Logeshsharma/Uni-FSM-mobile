@@ -22,6 +22,7 @@ import com.uni.fsm.domain.usecase.GetJobDetailsUseCase
 import com.uni.fsm.domain.usecase.GetJobListUseCase
 import com.uni.fsm.domain.usecase.LoginUseCase
 import com.uni.fsm.domain.usecase.StartJobUseCase
+import com.uni.fsm.domain.usecase.UploadImagesUseCase
 import com.uni.fsm.presentation.screens.create_job.CreateJobScreen
 import com.uni.fsm.presentation.screens.create_job.CreateJobViewModel
 import com.uni.fsm.presentation.screens.dashboard.DashboardScreen
@@ -30,6 +31,8 @@ import com.uni.fsm.presentation.screens.job_detail.JobDetailScreen
 import com.uni.fsm.presentation.screens.job_detail.JobDetailViewModel
 import com.uni.fsm.presentation.screens.login.LoginScreen
 import com.uni.fsm.presentation.screens.login.LoginViewModel
+import com.uni.fsm.presentation.screens.upload_image.UploadImagesScreen
+import com.uni.fsm.presentation.screens.upload_image.UploadImagesViewModel
 import kotlinx.coroutines.launch
 
 
@@ -55,6 +58,9 @@ fun AppNavigationHost() {
     val startJobUseCase = remember { StartJobUseCase(jobRepository) }
     val jobDetailViewModel = remember { JobDetailViewModel(getJobDetailsUseCase, startJobUseCase) }
 
+    val uploadImagesUseCase = remember { UploadImagesUseCase(jobRepository) }
+    val uploadImagesViewModel = remember { UploadImagesViewModel(uploadImagesUseCase) }
+
     val coroutineScope = rememberCoroutineScope()
 
 
@@ -71,21 +77,19 @@ fun AppNavigationHost() {
             arguments = listOf(navArgument("userId") { type = NavType.StringType })
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
-            DashboardScreen(viewModel = jobListViewModel,
-                onLogout = {
-                    navController.navigate("login") {
-                        popUpTo("Dashboard/{userId}") { inclusive = true }
-                    }
-                    coroutineScope.launch {
-                        SessionManager.clear(context)
-                    }
-                }, onCreateJob = {
-                    navController.navigate("create_job/$userId")
-                },
-                onJobClicked = { job ->
-                    val jobId = job.id
-                    navController.navigate("job_detail/$jobId")
+            DashboardScreen(viewModel = jobListViewModel, onLogout = {
+                navController.navigate("login") {
+                    popUpTo("Dashboard/{userId}") { inclusive = true }
                 }
+                coroutineScope.launch {
+                    SessionManager.clear(context)
+                }
+            }, onCreateJob = {
+                navController.navigate("create_job/$userId")
+            }, onJobClicked = { job ->
+                val jobId = job.id
+                navController.navigate("job_detail/$jobId")
+            }
 
             )
         }
@@ -105,10 +109,33 @@ fun AppNavigationHost() {
             arguments = listOf(navArgument("jobId") { type = NavType.StringType })
         ) { backStackEntry ->
             val jobId = backStackEntry.arguments?.getString("jobId") ?: ""
-            JobDetailScreen(jobId = jobId,
-                viewModel = jobDetailViewModel, onBack = {
+            JobDetailScreen(jobId = jobId, viewModel = jobDetailViewModel, onBack = {
+                navController.popBackStack()
+            },
+                navUploadImage = { techId ->
+                    navController.navigate("upload_images/$jobId/$techId")
+                }
+
+            )
+        }
+
+        composable(
+            "upload_images/{jobId}/{techId}",
+            arguments = listOf(navArgument("jobId") { type = NavType.StringType },
+                navArgument("techId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val jobId = backStackEntry.arguments?.getString("jobId") ?: ""
+            val techId = backStackEntry.arguments?.getString("techId") ?: "before"
+
+            UploadImagesScreen(
+                jobId = jobId,
+                type = "before",
+                technicianId = techId,
+                onBack = {
                     navController.popBackStack()
-                })
+                },
+                viewModel = uploadImagesViewModel
+            )
         }
 
     }
