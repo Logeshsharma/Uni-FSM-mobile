@@ -76,4 +76,5 @@ dependencies {
     implementation (libs.material3)
     implementation (libs.material)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.coil.compose)
 }

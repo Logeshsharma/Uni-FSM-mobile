@@ -7,6 +7,11 @@ import com.uni.fsm.data.model.response.toDomain
 import com.uni.fsm.data.remote.JobApiService
 import com.uni.fsm.domain.model.Job
 import com.uni.fsm.domain.repository.JobRepository
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 
 class JobRepositoryImpl(private val apiService: JobApiService) : JobRepository {
     override suspend fun createJob(jobRequest: CreateJobRequest): Result<CreateJobResponse> {
@@ -61,6 +66,35 @@ class JobRepositoryImpl(private val apiService: JobApiService) : JobRepository {
                 Result.success(message)
             } else {
                 Result.failure(Exception("Failed to start job"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun uploadImages(
+        jobId: String,
+        technicianId: String,
+        type: String,
+        imageFiles: List<File>
+    ): Result<List<String>> {
+        return try {
+            val parts = imageFiles.map { file ->
+                val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+                MultipartBody.Part.createFormData("image", file.name, requestFile)
+            }
+
+            val response = apiService.uploadImages(
+                jobId = jobId.toRequestBody("text/plain".toMediaTypeOrNull()),
+                type = type.toRequestBody("text/plain".toMediaTypeOrNull()),
+                technicianId = technicianId.toRequestBody("text/plain".toMediaTypeOrNull()),
+                images = parts
+            )
+
+            if (response.isSuccessful) {
+                Result.success(response.body()?.urls ?: emptyList())
+            } else {
+                Result.failure(Exception(response.message()))
             }
         } catch (e: Exception) {
             Result.failure(e)
