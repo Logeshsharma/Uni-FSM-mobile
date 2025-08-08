@@ -118,7 +118,7 @@ fun JobCard(job: Job, onJobClicked: (Job) -> Unit) {
                     ) {
                         Text("Techci", fontSize = 14.sp)
                         Icon(Icons.Default.ArrowForward, contentDescription = "to")
-                        Text(job.assigned_to.username, fontSize = 14.sp)
+                        Text(job.assignedTo.username, fontSize = 14.sp)
                     }
                 }
 

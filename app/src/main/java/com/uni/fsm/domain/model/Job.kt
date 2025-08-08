@@ -10,11 +10,15 @@ data class Job(
     val address: String,
     val status: String,
     val createdBy: JobUser,
-    val assigned_to: JobUser,
+    val assignedTo: JobUser,
+    val afterImageUploaded: Boolean,
+    val afterImages: List<String>,
+    val beforeImageUploaded: Boolean,
+    val beforeImages: List<String>,
 )
 
 data class JobUser(
-    val user_id: String,
+    val userId: String,
     val username: String,
 )
 

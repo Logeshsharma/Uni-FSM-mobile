@@ -14,6 +14,10 @@ data class JobResponse(
     val status: String?,
     val created_by: UserDto?,
     val assigned_to: UserDto?,
+    val after_image_uploaded: Boolean?,
+    val after_images: List<String>?,
+    val before_image_uploaded: Boolean?,
+    val before_images: List<String>?,
 )
 
 data class UserDto(
@@ -32,12 +36,17 @@ fun JobResponse.toDomain(): Job {
         address = address ?: "",
         status = status ?: "",
         createdBy = JobUser(
-            user_id = created_by?.user_id ?: "",
+            userId = created_by?.user_id ?: "",
             username = created_by?.username ?: "",
         ),
-        assigned_to = JobUser(
-            user_id = assigned_to?.user_id ?: "",
+        assignedTo = JobUser(
+            userId = assigned_to?.user_id ?: "",
             username = assigned_to?.username ?: "Not yet Assigned",
-        )
+        ),
+        beforeImageUploaded = before_image_uploaded ?: false,
+        beforeImages = before_images ?: emptyList(),
+        afterImageUploaded = after_image_uploaded ?: false,
+        afterImages = after_images ?: emptyList()
+
     )
 }
