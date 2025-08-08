@@ -12,14 +12,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.CheckBox
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -46,6 +44,7 @@ fun JobListScreen(viewModel: JobListViewModel, onJobClicked: (Job) -> Unit) {
     val context = LocalContext.current
     val sessionViewModel: SessionViewModel = viewModel(factory = SessionViewModelFactory(context))
     val user by sessionViewModel.session.collectAsState()
+
     LaunchedEffect(user) {
         user?.let {
             viewModel.loadJobs(it.user_id, it.role)
@@ -54,24 +53,22 @@ fun JobListScreen(viewModel: JobListViewModel, onJobClicked: (Job) -> Unit) {
 
     if (viewModel.isLoading) {
         Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
         ) {
-            CircularProgressIndicator(
-                color = Color.Black
-            )
+            CircularProgressIndicator(color = Color.Black)
         }
     } else {
-        LazyColumn {
-            items(viewModel.jobs.count()) { index ->
-                JobCard(viewModel.jobs[index], onJobClicked)
-                Spacer(modifier = Modifier.height(16.dp))
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(viewModel.jobs.size) { i ->
+                JobCard(viewModel.jobs[i], onJobClicked)
             }
+
         }
 
         viewModel.errorMessage?.let {
-            Text(it, color = Color.Red)
+            Text(it, color = Color.Red, modifier = Modifier.padding(16.dp))
         }
     }
 }
@@ -82,56 +79,77 @@ fun JobCard(job: Job, onJobClicked: (Job) -> Unit) {
         onClick = { onJobClicked(job) },
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight(),
-        colors = CardColors(
-            containerColor = Color(0xFFD9D2FC),
-            contentColor = Color.Black,
-            disabledContentColor = Color.Black,
-            disabledContainerColor = Color.Gray
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            .padding(vertical = 10.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFD9D2FC),),
+        elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp)
-
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Row(modifier = Modifier.fillMaxWidth()) {
+            Row(verticalAlignment = Alignment.Top) {
                 Box(
                     modifier = Modifier
                         .size(60.dp)
-                        .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
-                )
+                        .background(Color(0xFFE0E0E0), shape = RoundedCornerShape(8.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Work,
+                        contentDescription = "Job Icon",
+                        tint = Color.Gray
+                    )
+                }
 
                 Spacer(modifier = Modifier.width(12.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(job.category, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                    Text(job.title, style = MaterialTheme.typography.bodyMedium)
+                    Text(job.category, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(job.title, style = MaterialTheme.typography.bodyMedium, maxLines = 1)
+                    Spacer(modifier = Modifier.height(6.dp))
                     Text(
-                        job.date,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
+                        job.date, style = MaterialTheme.typography.bodySmall, color = Color.Gray
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("Techci", fontSize = 14.sp)
-                        Icon(Icons.Default.ArrowForward, contentDescription = "to")
-                        Text(job.assignedTo.username, fontSize = 14.sp)
-                    }
-                }
-
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        imageVector = Icons.Default.CheckBox,
-                        contentDescription = "Status",
-                        tint = if (job.status == "Completed") Color(0xFF4CAF50) else Color.Gray
-                    )
-                    Text(job.status, fontSize = 10.sp)
                 }
             }
 
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Person, contentDescription = "Technician", tint = Color.Gray)
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        job.assignedTo.username, style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
+                StatusChip(job.status)
+            }
         }
     }
 }
+
+@Composable
+fun StatusChip(status: String) {
+    val textColor = when (status) {
+        "Assigned" -> Color(0xFF1684DA)
+        "OnProcess" -> Color(0xFF452BCC)
+        "Completed" -> Color(0xFF388E3C)
+        else -> Color.LightGray
+    }
+
+    val backgroundColor = textColor.copy(alpha = 0.15f) // Light tint of the same color
+
+    Box(
+        modifier = Modifier
+            .background(backgroundColor, shape = RoundedCornerShape(50))
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+    ) {
+        Text(status, color = textColor, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+    }
+}
+

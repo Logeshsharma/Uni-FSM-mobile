@@ -67,6 +67,7 @@ fun AppBar(
         CenterAlignedTopAppBar(colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = Color(0xFFD9D2FC),
             titleContentColor = Color(0xFF000000),
+            scrolledContainerColor = Color(0xFFD9D2FC),
         ), title = {
 
             Text(
