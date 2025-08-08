@@ -26,11 +26,13 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.uni.fsm.domain.model.Job
 import com.uni.fsm.presentation.common.CommonAppBarScaffold
+import kotlinx.coroutines.launch
 
 @Composable
 fun JobDetailScreen(
@@ -49,10 +52,10 @@ fun JobDetailScreen(
     onBack: () -> Unit,
     viewModel: JobDetailViewModel,
     navUploadImage: (techId: String) -> Unit = {},
-    onCompleteJob: () -> Unit = {},
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
     val job = viewModel.jobDetail
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(jobId) {
         viewModel.loadJobDetail(jobId)
@@ -81,9 +84,21 @@ fun JobDetailScreen(
                     job = it,
                     innerPadding = innerPadding,
                     navUploadImage = navUploadImage,
-                    onCompleteJob = { viewModel.startJob(job.id, job.assignedTo.userId) },
-                    onStartJob = { viewModel.startJob(job.id, job.assignedTo.userId) }
+                    onCompleteJob = {
+                        if (job.beforeImageUploaded && job.afterImageUploaded) {
+                            viewModel.completeJob(job.id, job.assignedTo.userId)
 
+                        } else {
+                            coroutineScope.launch {
+                                snackBarHostState.showSnackbar(
+                                    "Please upload images!",
+                                    duration = SnackbarDuration.Short
+                                )
+                            }
+                        }
+
+                    },
+                    onStartJob = { viewModel.startJob(job.id, job.assignedTo.userId) }
                 )
             } ?: Text(viewModel.errorMessage ?: "Error", color = Color.Red)
 
@@ -119,7 +134,6 @@ fun JobDetailUI(
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
-        // Job Header
         Card(
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(containerColor = Color(0xFFF8F8F8)),
@@ -145,7 +159,6 @@ fun JobDetailUI(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Service Details
         SectionCard(title = "Service Details") {
             Text("Category: ${job.category}")
             Text("Date: ${job.date}")
@@ -155,42 +168,39 @@ fun JobDetailUI(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Job Description
         SectionCard(title = "Description") {
             Text(job.description, fontSize = 14.sp, color = Color.Black)
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
 
-        // Job Images
+
         JobImagesSection(job.beforeImages, job.afterImages)
 
-        Spacer(modifier = Modifier.height(20.dp))
 
-        // Action Buttons
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
-                    .border(1.dp, Color.Gray, RoundedCornerShape(12.dp))
-                    .clickable { navUploadImage(job.assignedTo.userId) },
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        imageVector = Icons.Default.AddAPhoto,
-                        contentDescription = "Upload Image",
-                        modifier = Modifier.size(32.dp),
-                        tint = Color.Gray
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text("Upload Image", fontSize = 14.sp, color = Color.Gray)
-                }
-            }
-
-
             if (buttonText != null && onClickAction != null) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp)
+                        .border(1.dp, Color.Gray, RoundedCornerShape(12.dp))
+                        .clickable { navUploadImage(job.assignedTo.userId) },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            imageVector = Icons.Default.AddAPhoto,
+                            contentDescription = "Upload Image",
+                            modifier = Modifier.size(32.dp),
+                            tint = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text("Upload Image", fontSize = 14.sp, color = Color.Gray)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
                 Button(
                     onClick = onClickAction,
                     modifier = Modifier
@@ -210,7 +220,7 @@ fun JobDetailUI(
 fun SectionCard(title: String, content: @Composable ColumnScope.() -> Unit) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor =Color(0xFFD9D2FC)),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFD9D2FC)),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -249,8 +259,8 @@ fun JobImagesSection(
 ) {
     Column(modifier = Modifier.padding(16.dp)) {
 
-        // Before Images
         if (beforeImages.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(20.dp))
             Text(
                 text = "Before Images",
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -271,8 +281,8 @@ fun JobImagesSection(
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        // After Images
         if (afterImages.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(20.dp))
             Text(
                 text = "After Images",
                 modifier = Modifier.padding(bottom = 8.dp)

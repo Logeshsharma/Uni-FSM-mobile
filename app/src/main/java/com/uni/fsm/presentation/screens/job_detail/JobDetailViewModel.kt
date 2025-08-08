@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.uni.fsm.domain.model.Job
+import com.uni.fsm.domain.usecase.CompleteJobUseCase
 import com.uni.fsm.domain.usecase.GetJobDetailsUseCase
 import com.uni.fsm.domain.usecase.StartJobUseCase
 import kotlinx.coroutines.delay
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 class JobDetailViewModel(
     private val useCase: GetJobDetailsUseCase,
     private val startJobUseCase: StartJobUseCase,
+    private val completeJobUseCase: CompleteJobUseCase,
 ) : ViewModel() {
 
     var jobDetail by mutableStateOf<Job?>(null)
@@ -45,6 +47,20 @@ class JobDetailViewModel(
         viewModelScope.launch {
             isLoading = true
             val result = startJobUseCase(jobId, technicianId)
+            delay(1000)
+            loadJobDetail(jobId)
+            result.fold(
+                onSuccess = { message = it },
+                onFailure = { message = it.message }
+            )
+            isLoading = false
+        }
+    }
+
+    fun completeJob(jobId: String, technicianId: String) {
+        viewModelScope.launch {
+            isLoading = true
+            val result = completeJobUseCase(jobId, technicianId)
             delay(1000)
             loadJobDetail(jobId)
             result.fold(
