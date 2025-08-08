@@ -41,4 +41,8 @@ interface JobApiService {
         @Part images: List<MultipartBody.Part>
     ): Response<UploadImagesResponse>
 
+
+    @POST("/mapi/complete_job")
+    suspend fun completeJob(@Body request: StartJobRequest): Response<CommonResponse>
+
 }

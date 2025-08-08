@@ -17,4 +17,6 @@ interface JobRepository {
         imageFiles: List<File>,
     ): Result<List<String>>
 
+    suspend fun completeJob(jobId: String, technicianId: String): Result<String>
+
 }

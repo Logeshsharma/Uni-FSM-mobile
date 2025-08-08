@@ -17,6 +17,7 @@ import com.uni.fsm.data.remote.client.APIClient
 import com.uni.fsm.data.repository.JobRepositoryImpl
 import com.uni.fsm.data.repository.LoginRepositoryImpl
 import com.uni.fsm.domain.model.User
+import com.uni.fsm.domain.usecase.CompleteJobUseCase
 import com.uni.fsm.domain.usecase.CreateJobUseCase
 import com.uni.fsm.domain.usecase.GetJobDetailsUseCase
 import com.uni.fsm.domain.usecase.GetJobListUseCase
@@ -56,7 +57,9 @@ fun AppNavigationHost() {
 
     val getJobDetailsUseCase = remember { GetJobDetailsUseCase(jobRepository) }
     val startJobUseCase = remember { StartJobUseCase(jobRepository) }
-    val jobDetailViewModel = remember { JobDetailViewModel(getJobDetailsUseCase, startJobUseCase) }
+    val completeJobUseCase = remember { CompleteJobUseCase(jobRepository) }
+    val jobDetailViewModel =
+        remember { JobDetailViewModel(getJobDetailsUseCase, startJobUseCase, completeJobUseCase) }
 
     val uploadImagesUseCase = remember { UploadImagesUseCase(jobRepository) }
     val uploadImagesViewModel = remember { UploadImagesViewModel(uploadImagesUseCase) }
@@ -129,7 +132,6 @@ fun AppNavigationHost() {
 
             UploadImagesScreen(
                 jobId = jobId,
-                type = "before",
                 technicianId = techId,
                 onBack = {
                     navController.popBackStack()

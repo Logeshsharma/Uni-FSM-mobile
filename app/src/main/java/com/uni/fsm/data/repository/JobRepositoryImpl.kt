@@ -101,4 +101,18 @@ class JobRepositoryImpl(private val apiService: JobApiService) : JobRepository {
         }
     }
 
+    override suspend fun completeJob(jobId: String, technicianId: String): Result<String> {
+        return try {
+            val response = apiService.completeJob(StartJobRequest(jobId, technicianId))
+            if (response.isSuccessful) {
+                val message = response.body()?.message ?: "Success"
+                Result.success(message)
+            } else {
+                Result.failure(Exception("Failed to start job"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 }
