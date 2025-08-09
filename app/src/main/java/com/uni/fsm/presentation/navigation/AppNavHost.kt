@@ -18,11 +18,14 @@ import com.uni.fsm.data.repository.JobRepositoryImpl
 import com.uni.fsm.data.repository.LoginRepositoryImpl
 import com.uni.fsm.domain.model.User
 import com.uni.fsm.domain.usecase.CompleteJobUseCase
+import com.uni.fsm.domain.usecase.CompletedJobFilterUseCase
 import com.uni.fsm.domain.usecase.CreateJobUseCase
 import com.uni.fsm.domain.usecase.GetJobDetailsUseCase
 import com.uni.fsm.domain.usecase.GetJobListUseCase
 import com.uni.fsm.domain.usecase.LoginUseCase
+import com.uni.fsm.domain.usecase.OnProcessJobFilterUseCase
 import com.uni.fsm.domain.usecase.StartJobUseCase
+import com.uni.fsm.domain.usecase.UpcomingJobFilterUseCase
 import com.uni.fsm.domain.usecase.UploadImagesUseCase
 import com.uni.fsm.presentation.screens.create_job.CreateJobScreen
 import com.uni.fsm.presentation.screens.create_job.CreateJobViewModel
@@ -53,7 +56,17 @@ fun AppNavigationHost() {
     val createJobViewModel = remember { CreateJobViewModel(createJobUseCase) }
 
     val jobListUseCase = remember { GetJobListUseCase(jobRepository) }
-    val jobListViewModel = remember { JobListViewModel(jobListUseCase) }
+    val upcomingJobFilterUseCase = remember { UpcomingJobFilterUseCase() }
+    val completedJobFilterUseCase = remember { CompletedJobFilterUseCase() }
+    val onProcessJobFilterUseCase = remember { OnProcessJobFilterUseCase() }
+    val jobListViewModel = remember {
+        JobListViewModel(
+            jobListUseCase,
+            upcomingJobFilterUseCase,
+            completedJobFilterUseCase,
+            onProcessJobFilterUseCase
+        )
+    }
 
     val getJobDetailsUseCase = remember { GetJobDetailsUseCase(jobRepository) }
     val startJobUseCase = remember { StartJobUseCase(jobRepository) }
