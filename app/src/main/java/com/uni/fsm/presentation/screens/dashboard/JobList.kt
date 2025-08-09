@@ -40,7 +40,7 @@ import com.uni.fsm.presentation.navigation.SessionViewModel
 import com.uni.fsm.presentation.navigation.SessionViewModelFactory
 
 @Composable
-fun JobListScreen(viewModel: JobListViewModel, onJobClicked: (Job) -> Unit) {
+fun JobListScreen(viewModel: JobListViewModel, onJobClicked: (Job) -> Unit, isStudent: Boolean) {
     val context = LocalContext.current
     val sessionViewModel: SessionViewModel = viewModel(factory = SessionViewModelFactory(context))
     val user by sessionViewModel.session.collectAsState()
@@ -52,20 +52,71 @@ fun JobListScreen(viewModel: JobListViewModel, onJobClicked: (Job) -> Unit) {
     }
 
     if (viewModel.isLoading) {
-        Box(
-            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-        ) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator(color = Color.Black)
         }
     } else {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(viewModel.jobs.size) { i ->
-                JobCard(viewModel.jobs[i], onJobClicked)
+        if (isStudent) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                if (viewModel.jobs.isNotEmpty()) {
+                    items(viewModel.jobs.size) { i ->
+                        JobCard(viewModel.jobs[i], onJobClicked)
+                    }
+                }
             }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                if (viewModel.onProcessJobs.isNotEmpty()) {
+                    item {
+                        Text(
+                            "Current Job",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                    }
+                    items(viewModel.onProcessJobs.size) { i ->
+                        JobCard(viewModel.onProcessJobs[i], onJobClicked)
+                    }
+                }
 
+                if (viewModel.upcomingJobs.isNotEmpty()) {
+                    item {
+                        Text(
+                            "Upcoming Jobs",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                    }
+                    items(viewModel.upcomingJobs.size) { i ->
+                        JobCard(viewModel.upcomingJobs[i], onJobClicked)
+                    }
+                }
+
+                if (viewModel.completedJobs.isNotEmpty()) {
+                    item {
+                        Text(
+                            "Completed Jobs",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                    }
+                    items(viewModel.completedJobs.size) { i ->
+                        JobCard(viewModel.completedJobs[i], onJobClicked)
+                    }
+                }
+            }
         }
+
+
 
         viewModel.errorMessage?.let {
             Text(it, color = Color.Red, modifier = Modifier.padding(16.dp))
@@ -80,7 +131,7 @@ fun JobCard(job: Job, onJobClicked: (Job) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 10.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFD9D2FC),),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFD9D2FC)),
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
@@ -89,13 +140,13 @@ fun JobCard(job: Job, onJobClicked: (Job) -> Unit) {
                 Box(
                     modifier = Modifier
                         .size(60.dp)
-                        .background(Color(0xFFE0E0E0), shape = RoundedCornerShape(8.dp)),
+                        .background(Color.White, shape = RoundedCornerShape(8.dp)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.Work,
                         contentDescription = "Job Icon",
-                        tint = Color.Gray
+                        tint = Color.Black
                     )
                 }
 
@@ -120,7 +171,11 @@ fun JobCard(job: Job, onJobClicked: (Job) -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Person, contentDescription = "Technician", tint = Color.Gray)
+                    Icon(
+                        Icons.Default.Person,
+                        contentDescription = "Technician",
+                        tint = Color.Black
+                    )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         job.assignedTo.username, style = MaterialTheme.typography.bodyMedium
@@ -136,9 +191,9 @@ fun JobCard(job: Job, onJobClicked: (Job) -> Unit) {
 @Composable
 fun StatusChip(status: String) {
     val textColor = when (status) {
-        "Assigned" -> Color(0xFF1684DA)
-        "OnProcess" -> Color(0xFF452BCC)
-        "Completed" -> Color(0xFF388E3C)
+        "Assigned" -> Color(0xFF1280D5)
+        "OnProcess" -> Color(0xFF4126CE)
+        "Completed" -> Color(0xFF08960B)
         else -> Color.LightGray
     }
 
