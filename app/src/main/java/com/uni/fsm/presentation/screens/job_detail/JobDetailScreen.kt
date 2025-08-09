@@ -31,6 +31,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -38,12 +40,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.uni.fsm.domain.model.Job
 import com.uni.fsm.presentation.common.CommonAppBarScaffold
+import com.uni.fsm.presentation.navigation.SessionViewModel
+import com.uni.fsm.presentation.navigation.SessionViewModelFactory
 import kotlinx.coroutines.launch
 
 @Composable
@@ -53,9 +59,12 @@ fun JobDetailScreen(
     viewModel: JobDetailViewModel,
     navUploadImage: (techId: String) -> Unit = {},
 ) {
+    val context = LocalContext.current
     val snackBarHostState = remember { SnackbarHostState() }
     val job = viewModel.jobDetail
     val coroutineScope = rememberCoroutineScope()
+    val sessionViewModel: SessionViewModel = viewModel(factory = SessionViewModelFactory(context))
+    val user by sessionViewModel.session.collectAsState()
 
     LaunchedEffect(jobId) {
         viewModel.loadJobDetail(jobId)
@@ -98,7 +107,8 @@ fun JobDetailScreen(
                         }
 
                     },
-                    onStartJob = { viewModel.startJob(job.id, job.assignedTo.userId) }
+                    onStartJob = { viewModel.startJob(job.id, job.assignedTo.userId) },
+                    isStudent = user?.role == "Student"
                 )
             } ?: Text(viewModel.errorMessage ?: "Error", color = Color.Red)
 
@@ -114,6 +124,7 @@ fun JobDetailUI(
     onStartJob: () -> Unit,
     onCompleteJob: () -> Unit,
     innerPadding: PaddingValues,
+    isStudent: Boolean,
 ) {
     val onClickAction = when (job.status) {
         "Assigned" -> onStartJob
@@ -176,40 +187,43 @@ fun JobDetailUI(
 
         JobImagesSection(job.beforeImages, job.afterImages)
 
+        if (!isStudent) {
 
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            if (buttonText != null && onClickAction != null) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp)
-                        .border(1.dp, Color.Gray, RoundedCornerShape(12.dp))
-                        .clickable { navUploadImage(job.assignedTo.userId) },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
-                            imageVector = Icons.Default.AddAPhoto,
-                            contentDescription = "Upload Image",
-                            modifier = Modifier.size(32.dp),
-                            tint = Color.Gray
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text("Upload Image", fontSize = 14.sp, color = Color.Gray)
+
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (buttonText != null && onClickAction != null) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp)
+                            .border(1.dp, Color.Gray, RoundedCornerShape(12.dp))
+                            .clickable { navUploadImage(job.assignedTo.userId) },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                imageVector = Icons.Default.AddAPhoto,
+                                contentDescription = "Upload Image",
+                                modifier = Modifier.size(32.dp),
+                                tint = Color.Gray
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text("Upload Image", fontSize = 14.sp, color = Color.Gray)
+                        }
                     }
-                }
 
-                Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
-                Button(
-                    onClick = onClickAction,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF000000))
-                ) {
-                    Text(buttonText, fontSize = 16.sp, color = Color.White)
+                    Button(
+                        onClick = onClickAction,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF000000))
+                    ) {
+                        Text(buttonText, fontSize = 16.sp, color = Color.White)
+                    }
                 }
             }
         }
@@ -230,27 +244,6 @@ fun SectionCard(title: String, content: @Composable ColumnScope.() -> Unit) {
         }
     }
 }
-
-@Composable
-fun StatusChip(status: String) {
-    Text(
-        text = status,
-        modifier = Modifier
-            .background(
-                color = when (status) {
-                    "Assigned" -> Color(0xFF1684DA)
-                    "OnProcess" -> Color(0xFF452BCC)
-                    "Completed" -> Color(0xFF388E3C)
-                    else -> Color.LightGray
-                },
-                shape = RoundedCornerShape(12.dp)
-            )
-            .padding(horizontal = 12.dp, vertical = 6.dp),
-        color = Color.White,
-        fontSize = 14.sp
-    )
-}
-
 
 @Composable
 fun JobImagesSection(
@@ -301,5 +294,25 @@ fun JobImagesSection(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun StatusChip(status: String) {
+    val textColor = when (status) {
+        "Assigned" -> Color(0xFF1280D5)
+        "OnProcess" -> Color(0xFF4126CE)
+        "Completed" -> Color(0xFF08960B)
+        else -> Color.LightGray
+    }
+
+    val backgroundColor = textColor.copy(alpha = 0.15f) // Light tint of the same color
+
+    Box(
+        modifier = Modifier
+            .background(backgroundColor, shape = RoundedCornerShape(50))
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+    ) {
+        Text(status, color = textColor, fontSize = 12.sp, fontWeight = FontWeight.Medium)
     }
 }
