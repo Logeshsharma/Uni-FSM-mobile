@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.uni.fsm.domain.model.Job
+import com.uni.fsm.domain.usecase.CloseJobUseCase
 import com.uni.fsm.domain.usecase.CompleteJobUseCase
 import com.uni.fsm.domain.usecase.GetJobDetailsUseCase
 import com.uni.fsm.domain.usecase.StartJobUseCase
@@ -17,6 +18,7 @@ class JobDetailViewModel(
     private val useCase: GetJobDetailsUseCase,
     private val startJobUseCase: StartJobUseCase,
     private val completeJobUseCase: CompleteJobUseCase,
+    private val closeJobUseCase: CloseJobUseCase,
 ) : ViewModel() {
 
     var jobDetail by mutableStateOf<Job?>(null)
@@ -35,10 +37,7 @@ class JobDetailViewModel(
             isLoading = true
             delay(1000)
             val result = useCase(jobId)
-            result.fold(
-                onSuccess = { jobDetail = it },
-                onFailure = { errorMessage = it.message }
-            )
+            result.fold(onSuccess = { jobDetail = it }, onFailure = { errorMessage = it.message })
             isLoading = false
         }
     }
@@ -49,10 +48,7 @@ class JobDetailViewModel(
             val result = startJobUseCase(jobId, technicianId)
             delay(1000)
             loadJobDetail(jobId)
-            result.fold(
-                onSuccess = { message = it },
-                onFailure = { message = it.message }
-            )
+            result.fold(onSuccess = { message = it }, onFailure = { message = it.message })
             isLoading = false
         }
     }
@@ -63,10 +59,18 @@ class JobDetailViewModel(
             val result = completeJobUseCase(jobId, technicianId)
             delay(1000)
             loadJobDetail(jobId)
-            result.fold(
-                onSuccess = { message = it },
-                onFailure = { message = it.message }
-            )
+            result.fold(onSuccess = { message = it }, onFailure = { message = it.message })
+            isLoading = false
+        }
+    }
+
+    fun closeJob(jobId: String, studentId: String) {
+        viewModelScope.launch {
+            isLoading = true
+            val result = closeJobUseCase(jobId, studentId)
+            delay(1000)
+            loadJobDetail(jobId)
+            result.fold(onSuccess = { message = it }, onFailure = { message = it.message })
             isLoading = false
         }
     }

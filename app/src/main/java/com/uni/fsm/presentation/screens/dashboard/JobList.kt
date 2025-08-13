@@ -58,8 +58,7 @@ fun JobListScreen(viewModel: JobListViewModel, onJobClicked: (Job) -> Unit, isSt
     } else {
         if (isStudent) {
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 if (viewModel.jobs.isNotEmpty()) {
                     items(viewModel.jobs.size) { i ->
@@ -69,8 +68,7 @@ fun JobListScreen(viewModel: JobListViewModel, onJobClicked: (Job) -> Unit, isSt
             }
         } else {
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 if (viewModel.onProcessJobs.isNotEmpty()) {
                     item {
@@ -172,9 +170,7 @@ fun JobCard(job: Job, onJobClicked: (Job) -> Unit) {
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        Icons.Default.Person,
-                        contentDescription = "Technician",
-                        tint = Color.Black
+                        Icons.Default.Person, contentDescription = "Technician", tint = Color.Black
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
@@ -194,17 +190,20 @@ fun StatusChip(status: String) {
         "Assigned" -> Color(0xFF1280D5)
         "OnProcess" -> Color(0xFF4126CE)
         "Completed" -> Color(0xFF08960B)
+        "Closed" -> Color(0xFF008080)
         else -> Color.LightGray
     }
 
-    val backgroundColor = textColor.copy(alpha = 0.15f) // Light tint of the same color
+    val backgroundColor = textColor.copy(alpha = 0.15f)
 
     Box(
         modifier = Modifier
             .background(backgroundColor, shape = RoundedCornerShape(50))
             .padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
-        Text(status, color = textColor, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+        Text(
+            text = status, color = textColor, fontSize = 12.sp, fontWeight = FontWeight.Medium
+        )
     }
 }
 

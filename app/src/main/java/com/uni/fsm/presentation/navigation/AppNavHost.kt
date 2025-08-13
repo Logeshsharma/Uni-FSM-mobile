@@ -17,12 +17,13 @@ import com.uni.fsm.data.remote.client.APIClient
 import com.uni.fsm.data.repository.JobRepositoryImpl
 import com.uni.fsm.data.repository.LoginRepositoryImpl
 import com.uni.fsm.domain.model.User
+import com.uni.fsm.domain.usecase.CloseJobUseCase
 import com.uni.fsm.domain.usecase.CompleteJobUseCase
 import com.uni.fsm.domain.usecase.CompletedJobFilterUseCase
 import com.uni.fsm.domain.usecase.CreateJobUseCase
 import com.uni.fsm.domain.usecase.GetJobDetailsUseCase
 import com.uni.fsm.domain.usecase.GetJobListUseCase
-import com.uni.fsm.domain.usecase.LoginUseCase
+import com.uni.fsm.domain.usecase.LoginUseCaseImpl
 import com.uni.fsm.domain.usecase.OnProcessJobFilterUseCase
 import com.uni.fsm.domain.usecase.StartJobUseCase
 import com.uni.fsm.domain.usecase.UpcomingJobFilterUseCase
@@ -48,7 +49,7 @@ fun AppNavigationHost() {
 
     val navController = rememberNavController()
     val loginRepository = remember { LoginRepositoryImpl(APIClient.createLoginApiService()) }
-    val loginUseCase = remember { LoginUseCase(loginRepository) }
+    val loginUseCase = remember { LoginUseCaseImpl(loginRepository) }
     val loginViewModel = remember { LoginViewModel(loginUseCase) }
 
     val jobRepository = remember { JobRepositoryImpl(APIClient.createJobApiService()) }
@@ -71,8 +72,12 @@ fun AppNavigationHost() {
     val getJobDetailsUseCase = remember { GetJobDetailsUseCase(jobRepository) }
     val startJobUseCase = remember { StartJobUseCase(jobRepository) }
     val completeJobUseCase = remember { CompleteJobUseCase(jobRepository) }
-    val jobDetailViewModel =
-        remember { JobDetailViewModel(getJobDetailsUseCase, startJobUseCase, completeJobUseCase) }
+    val closeJobUseCase = remember { CloseJobUseCase(jobRepository) }
+    val jobDetailViewModel = remember {
+        JobDetailViewModel(
+            getJobDetailsUseCase, startJobUseCase, completeJobUseCase, closeJobUseCase
+        )
+    }
 
     val uploadImagesUseCase = remember { UploadImagesUseCase(jobRepository) }
     val uploadImagesViewModel = remember { UploadImagesViewModel(uploadImagesUseCase) }
@@ -127,10 +132,9 @@ fun AppNavigationHost() {
             val jobId = backStackEntry.arguments?.getString("jobId") ?: ""
             JobDetailScreen(jobId = jobId, viewModel = jobDetailViewModel, onBack = {
                 navController.popBackStack()
-            },
-                navUploadImage = { techId ->
-                    navController.navigate("upload_images/$jobId/$techId")
-                }
+            }, navUploadImage = { techId ->
+                navController.navigate("upload_images/$jobId/$techId")
+            }
 
             )
         }
@@ -144,12 +148,9 @@ fun AppNavigationHost() {
             val techId = backStackEntry.arguments?.getString("techId") ?: "before"
 
             UploadImagesScreen(
-                jobId = jobId,
-                technicianId = techId,
-                onBack = {
+                jobId = jobId, technicianId = techId, onBack = {
                     navController.popBackStack()
-                },
-                viewModel = uploadImagesViewModel
+                }, viewModel = uploadImagesViewModel
             )
         }
 

@@ -18,5 +18,7 @@ interface JobRepository {
     ): Result<List<String>>
 
     suspend fun completeJob(jobId: String, technicianId: String): Result<String>
+    suspend fun closeJob(jobId: String, studentId: String): Result<String>
+
 
 }

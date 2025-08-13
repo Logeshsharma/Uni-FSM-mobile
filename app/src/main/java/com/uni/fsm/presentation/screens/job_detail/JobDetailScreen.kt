@@ -58,7 +58,8 @@ fun JobDetailScreen(
     onBack: () -> Unit,
     viewModel: JobDetailViewModel,
     navUploadImage: (techId: String) -> Unit = {},
-) {
+
+    ) {
     val context = LocalContext.current
     val snackBarHostState = remember { SnackbarHostState() }
     val job = viewModel.jobDetail
@@ -70,10 +71,10 @@ fun JobDetailScreen(
         viewModel.loadJobDetail(jobId)
     }
 
+
+
     CommonAppBarScaffold(
-        title = "Job Detail",
-        onBack = onBack,
-        snackBarHostState = snackBarHostState
+        title = "Job Detail", onBack = onBack, snackBarHostState = snackBarHostState
     ) { innerPadding ->
 
         if (viewModel.isLoading) {
@@ -89,8 +90,7 @@ fun JobDetailScreen(
             }
         } else {
             job?.let {
-                JobDetailUI(
-                    job = it,
+                JobDetailUI(job = it,
                     innerPadding = innerPadding,
                     navUploadImage = navUploadImage,
                     onCompleteJob = {
@@ -100,16 +100,16 @@ fun JobDetailScreen(
                         } else {
                             coroutineScope.launch {
                                 snackBarHostState.showSnackbar(
-                                    "Please upload images!",
-                                    duration = SnackbarDuration.Short
+                                    "Please upload images!", duration = SnackbarDuration.Short
                                 )
                             }
                         }
 
                     },
+
                     onStartJob = { viewModel.startJob(job.id, job.assignedTo.userId) },
-                    isStudent = user?.role == "Student"
-                )
+                    isStudent = user?.role == "Student",
+                    onCloseJob = { viewModel.closeJob(job.id, job.createdBy.userId) })
             } ?: Text(viewModel.errorMessage ?: "Error", color = Color.Red)
 
         }
@@ -123,12 +123,14 @@ fun JobDetailUI(
     navUploadImage: (techId: String) -> Unit = {},
     onStartJob: () -> Unit,
     onCompleteJob: () -> Unit,
+    onCloseJob: () -> Unit,
     innerPadding: PaddingValues,
     isStudent: Boolean,
 ) {
     val onClickAction = when (job.status) {
         "Assigned" -> onStartJob
         "OnProcess" -> onCompleteJob
+        "Completed" -> onCloseJob
         else -> null
     }
 
@@ -226,7 +228,26 @@ fun JobDetailUI(
                     }
                 }
             }
+        } else {
+            if (job.status == "Completed" && job.techComplete) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    if (onClickAction != null) {
+                        Button(
+                            onClick = onClickAction,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF000000))
+                        ) {
+                            Text("Close Job", fontSize = 16.sp, color = Color.White)
+                        }
+                    }
+
+                }
+            }
         }
+
     }
 }
 
@@ -255,8 +276,7 @@ fun JobImagesSection(
         if (beforeImages.isNotEmpty()) {
             Spacer(modifier = Modifier.height(20.dp))
             Text(
-                text = "Before Images",
-                modifier = Modifier.padding(bottom = 8.dp)
+                text = "Before Images", modifier = Modifier.padding(bottom = 8.dp)
             )
             LazyRow {
                 items(beforeImages.size) { index ->
@@ -277,8 +297,7 @@ fun JobImagesSection(
         if (afterImages.isNotEmpty()) {
             Spacer(modifier = Modifier.height(20.dp))
             Text(
-                text = "After Images",
-                modifier = Modifier.padding(bottom = 8.dp)
+                text = "After Images", modifier = Modifier.padding(bottom = 8.dp)
             )
             LazyRow {
                 items(afterImages.size) { index ->
@@ -303,16 +322,22 @@ fun StatusChip(status: String) {
         "Assigned" -> Color(0xFF1280D5)
         "OnProcess" -> Color(0xFF4126CE)
         "Completed" -> Color(0xFF08960B)
+        "Closed" -> Color(0xFF008080)
         else -> Color.LightGray
     }
 
-    val backgroundColor = textColor.copy(alpha = 0.15f) // Light tint of the same color
+    val backgroundColor = textColor.copy(alpha = 0.15f)
 
     Box(
         modifier = Modifier
             .background(backgroundColor, shape = RoundedCornerShape(50))
             .padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
-        Text(status, color = textColor, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+        Text(
+            text = status,
+            color = textColor,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium
+        )
     }
 }

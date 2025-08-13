@@ -18,6 +18,8 @@ data class JobResponse(
     val after_images: List<String>?,
     val before_image_uploaded: Boolean?,
     val before_images: List<String>?,
+    val tech_complete: Boolean?,
+    val student_closed: Boolean?,
 )
 
 data class UserDto(
@@ -46,7 +48,9 @@ fun JobResponse.toDomain(): Job {
         beforeImageUploaded = before_image_uploaded ?: false,
         beforeImages = before_images ?: emptyList(),
         afterImageUploaded = after_image_uploaded ?: false,
-        afterImages = after_images ?: emptyList()
+        afterImages = after_images ?: emptyList(),
+        techComplete = tech_complete ?: false,
+        studentClosed = student_closed ?: false
 
     )
 }
