@@ -85,6 +85,8 @@ dependencies {
     testImplementation(kotlin("test")) // Kotlin test library
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     testImplementation("io.mockk:mockk:1.13.5")
+    testImplementation("org.robolectric:robolectric:4.10.3")
+
 
     // Android instrumentation tests
     androidTestImplementation(libs.androidx.junit)
@@ -97,4 +99,5 @@ dependencies {
     // Debug tools
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
 }
