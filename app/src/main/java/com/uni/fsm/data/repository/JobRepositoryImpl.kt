@@ -1,5 +1,6 @@
 package com.uni.fsm.data.repository
 
+import com.uni.fsm.data.model.request.CloseJobRequest
 import com.uni.fsm.data.model.request.CreateJobRequest
 import com.uni.fsm.data.model.request.StartJobRequest
 import com.uni.fsm.data.model.response.CreateJobResponse
@@ -76,7 +77,7 @@ class JobRepositoryImpl(private val apiService: JobApiService) : JobRepository {
         jobId: String,
         technicianId: String,
         type: String,
-        imageFiles: List<File>
+        imageFiles: List<File>,
     ): Result<List<String>> {
         return try {
             val parts = imageFiles.map { file ->
@@ -109,6 +110,21 @@ class JobRepositoryImpl(private val apiService: JobApiService) : JobRepository {
                 Result.success(message)
             } else {
                 Result.failure(Exception("Failed to start job"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun closeJob(jobId: String, studentId: String): Result<String> {
+        return try {
+            val response = apiService.closeJob(
+                CloseJobRequest(jobId, studentId)
+            )
+            if (response.isSuccessful) {
+                Result.success(response.body()?.message ?: "Job closed successfully")
+            } else {
+                Result.failure(Exception("Error: ${response.code()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)

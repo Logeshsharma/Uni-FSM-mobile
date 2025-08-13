@@ -15,6 +15,8 @@ data class Job(
     val afterImages: List<String>,
     val beforeImageUploaded: Boolean,
     val beforeImages: List<String>,
+    val techComplete : Boolean,
+    val studentClosed : Boolean
 )
 
 data class JobUser(

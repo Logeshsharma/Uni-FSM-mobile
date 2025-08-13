@@ -1,5 +1,6 @@
 package com.uni.fsm.data.remote
 
+import com.uni.fsm.data.model.request.CloseJobRequest
 import com.uni.fsm.data.model.request.CreateJobRequest
 import com.uni.fsm.data.model.request.StartJobRequest
 import com.uni.fsm.data.model.response.CommonResponse
@@ -23,7 +24,7 @@ interface JobApiService {
     @GET("/mapi/jobs_list")
     suspend fun getJobs(
         @Query("user_id") userId: String,
-        @Query("role") role: String
+        @Query("role") role: String,
     ): Response<List<JobResponse>>
 
     @GET("/mapi/job_detail")
@@ -38,11 +39,17 @@ interface JobApiService {
         @Part("job_id") jobId: RequestBody,
         @Part("type") type: RequestBody,
         @Part("technician_id") technicianId: RequestBody,
-        @Part images: List<MultipartBody.Part>
+        @Part images: List<MultipartBody.Part>,
     ): Response<UploadImagesResponse>
 
 
     @POST("/mapi/complete_job")
     suspend fun completeJob(@Body request: StartJobRequest): Response<CommonResponse>
+
+
+    @POST("mapi/close_job")
+    suspend fun closeJob(
+        @Body request: CloseJobRequest,
+    ): Response<CommonResponse>
 
 }
