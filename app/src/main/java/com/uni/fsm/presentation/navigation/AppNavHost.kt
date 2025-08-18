@@ -47,9 +47,9 @@ fun AppNavigationHost() {
     val sessionViewModel: SessionViewModel = viewModel(factory = SessionViewModelFactory(context))
     val user by sessionViewModel.session.collectAsState()
 
-    val navController = rememberNavController()
     val loginRepository = remember { LoginRepositoryImpl(APIClient.createLoginApiService()) }
     val loginUseCase = remember { LoginUseCaseImpl(loginRepository) }
+
     val loginViewModel = remember { LoginViewModel(loginUseCase) }
 
     val jobRepository = remember { JobRepositoryImpl(APIClient.createJobApiService()) }
@@ -84,7 +84,7 @@ fun AppNavigationHost() {
 
     val coroutineScope = rememberCoroutineScope()
 
-
+    val navController = rememberNavController()
     NavHost(navController = navController, startDestination = getStartDestination(user)) {
         composable("login") {
             LoginScreen(viewModel = loginViewModel) { userId ->
