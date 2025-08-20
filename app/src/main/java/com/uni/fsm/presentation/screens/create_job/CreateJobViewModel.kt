@@ -8,6 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.uni.fsm.data.model.request.CreateJobRequest
 import com.uni.fsm.domain.usecase.CreateJobUseCase
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class CreateJobViewModel(private val useCase: CreateJobUseCase) : ViewModel() {
     var title by mutableStateOf("")

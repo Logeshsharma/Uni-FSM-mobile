@@ -10,3 +10,4 @@ interface LoginApiService {
     @POST("/mapi/login")
     suspend fun loginUser(@Body loginRequest: LoginRequest): Response<LoginResponse>
 }
+
