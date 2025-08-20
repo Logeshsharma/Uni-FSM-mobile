@@ -174,9 +174,9 @@ fun JobDetailUI(
 
         SectionCard(title = "Service Details") {
             Text("Category: ${job.category}")
-            Text("Date: ${job.date}")
-            Text("Time: ${job.time}")
-            Text("Created by: ${job.createdBy.username}")
+            Text("Created Date: ${job.date}")
+            Text("Created Time: ${job.time}")
+            Text("Created By: ${job.createdBy.username}")
         }
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -334,10 +334,7 @@ fun StatusChip(status: String) {
             .padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
         Text(
-            text = status,
-            color = textColor,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Medium
+            text = status, color = textColor, fontSize = 12.sp, fontWeight = FontWeight.Medium
         )
     }
 }
