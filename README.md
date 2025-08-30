@@ -13,7 +13,8 @@ git push -uf origin main
 ## Instructions for starting the Android application
 
 Step-by-step instructions on how to run the Android project
-Prerequisites: Make sure you download Android Studio and the Android SDK installed and your device/emulator is set up properly.
+- **Prerequisites -**
+- Make sure you download Android Studio and the Android SDK installed and your device/emulator is set up properly.
 
 ### Step 0: Watch the video to install Android Studio
 Download Android Studio from the Android Studio, SDK and emulator Installation video for
