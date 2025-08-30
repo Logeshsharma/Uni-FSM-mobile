@@ -4,6 +4,9 @@ import android.net.Uri
 import com.uni.fsm.domain.usecase.UploadImagesUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertFalse
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,9 +19,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import java.io.File
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class UploadImagesViewModelTest {
@@ -41,8 +42,8 @@ class UploadImagesViewModelTest {
     }
 
     @Test
-    fun `addBeforeImageUri updates beforeImageUris`() = runTest {
-        val uri = Uri.parse("content://image1")
+    fun addBeforeImageUriupdatesbeforeImageUris() = runTest {
+        val uri: Uri = mockk(relaxed = true) // Mocked Uri instead of Uri.parse()
         viewModel.addBeforeImageUri(uri)
 
         assertEquals(1, viewModel.beforeImageUris.value.size)
@@ -50,8 +51,8 @@ class UploadImagesViewModelTest {
     }
 
     @Test
-    fun `addAfterImageUri updates afterImageUris`() = runTest {
-        val uri = Uri.parse("content://image2")
+    fun addAfterImageUriupdatesafterImageUris() = runTest {
+        val uri: Uri = mockk(relaxed = true) // Mocked Uri instead of Uri.parse()
         viewModel.addAfterImageUri(uri)
 
         assertEquals(1, viewModel.afterImageUris.value.size)
@@ -59,7 +60,7 @@ class UploadImagesViewModelTest {
     }
 
     @Test
-    fun `uploadImages success calls onSuccess and updates uploading and afterImageUris`() = runTest {
+    fun uploadImagessuccesscallsonSuccessandupdatesuploadingandafterImageUris() = runTest {
         val jobId = "job1"
         val techId = "tech1"
         val type = "after"
@@ -71,7 +72,8 @@ class UploadImagesViewModelTest {
         var successCalled = false
         var errorCalled = false
 
-        viewModel.uploadImages(jobId, techId, type, files,
+        viewModel.uploadImages(
+            jobId, techId, type, files,
             onSuccess = { successCalled = true },
             onError = { errorCalled = true }
         )
@@ -81,12 +83,11 @@ class UploadImagesViewModelTest {
         assertTrue(successCalled)
         assertFalse(errorCalled)
         assertFalse(viewModel.uploading.value)
-        // afterImageUris should be updated with dummy Uri converted from URLs
         assertEquals(uploadedUrls.size, viewModel.afterImageUris.value.size)
     }
 
     @Test
-    fun `uploadImages failure calls onError and updates uploading`() = runTest {
+    fun uploadImagesfailurecallsonErrorandupdatesuploading() = runTest {
         val jobId = "job1"
         val techId = "tech1"
         val type = "before"
@@ -97,7 +98,8 @@ class UploadImagesViewModelTest {
         var successCalled = false
         var errorMessage: String? = null
 
-        viewModel.uploadImages(jobId, techId, type, files,
+        viewModel.uploadImages(
+            jobId, techId, type, files,
             onSuccess = { successCalled = true },
             onError = { errorMessage = it }
         )
@@ -110,7 +112,7 @@ class UploadImagesViewModelTest {
     }
 
     @Test
-    fun `uploading state is true during upload`() = runTest {
+    fun uploadingstateistrueduringupload() = runTest {
         val jobId = "job1"
         val techId = "tech1"
         val type = "before"
@@ -119,7 +121,8 @@ class UploadImagesViewModelTest {
         val uploadDeferred = CompletableDeferred<Result<List<String>>>()
         coEvery { uploadImagesUseCase(jobId, techId, type, files) } returns uploadDeferred.await()
 
-        viewModel.uploadImages(jobId, techId, type, files,
+        viewModel.uploadImages(
+            jobId, techId, type, files,
             onSuccess = {},
             onError = {}
         )

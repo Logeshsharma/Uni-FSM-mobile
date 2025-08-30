@@ -323,6 +323,7 @@ fun StatusChip(status: String) {
         "OnProcess" -> Color(0xFF4126CE)
         "Completed" -> Color(0xFF08960B)
         "Closed" -> Color(0xFF008080)
+        "Pending" -> Color(0xFF3A2802)
         else -> Color.LightGray
     }
 

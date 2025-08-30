@@ -16,13 +16,10 @@ class LoginRepositoryImpl(
             if (response.isSuccessful && response.body()?.status == "success") {
                 val data = response.body()
                 if (data != null) {
-                    Result.success(
-                        data.toDomain()
-                    )
+                    Result.success(data.toDomain())
                 } else {
                     Result.failure(Exception(response.body()?.message ?: "Login failed"))
                 }
-
             } else {
                 Result.failure(Exception(response.body()?.message ?: "Login failed"))
             }

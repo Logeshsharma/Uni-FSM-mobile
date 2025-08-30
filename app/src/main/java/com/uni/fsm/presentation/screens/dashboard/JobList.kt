@@ -64,6 +64,14 @@ fun JobListScreen(viewModel: JobListViewModel, onJobClicked: (Job) -> Unit, isSt
                     items(viewModel.jobs.size) { i ->
                         JobCard(viewModel.jobs[i], onJobClicked)
                     }
+                } else {
+                    item {
+                        Text(
+                            "No Jobs Found",
+                            fontSize = 16.sp,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        )
+                    }
                 }
             }
         } else {
@@ -109,6 +117,15 @@ fun JobListScreen(viewModel: JobListViewModel, onJobClicked: (Job) -> Unit, isSt
                     }
                     items(viewModel.completedJobs.size) { i ->
                         JobCard(viewModel.completedJobs[i], onJobClicked)
+                    }
+                }
+                if (viewModel.jobs.isEmpty()) {
+                    item {
+                        Text(
+                            "No Jobs Found",
+                            fontSize = 16.sp,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        )
                     }
                 }
             }
@@ -191,6 +208,7 @@ fun StatusChip(status: String) {
         "OnProcess" -> Color(0xFF4126CE)
         "Completed" -> Color(0xFF08960B)
         "Closed" -> Color(0xFF008080)
+        "Pending" -> Color(0xFF3A2802)
         else -> Color.LightGray
     }
 
