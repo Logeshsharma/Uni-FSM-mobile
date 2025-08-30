@@ -95,9 +95,14 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation("io.mockk:mockk:1.13.11")  // latest stable version
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3") // for coroutine tests
+    androidTestImplementation("junit:junit:4.13.2")
 
     // Debug tools
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+
 
 }

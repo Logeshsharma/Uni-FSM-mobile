@@ -34,9 +34,6 @@ class JobListViewModel(
 
             result.fold(
                 onSuccess = { allJobs ->
-//                    allJobs.forEach {
-//                        println("allJobs.size -------- ${it.status}")
-//                    }
                     jobs = allJobs
                     upcomingJobs = upcomingJobUseCase(allJobs).getOrElse { emptyList() }
                     completedJobs = completedJobUseCase(allJobs).getOrElse { emptyList() }

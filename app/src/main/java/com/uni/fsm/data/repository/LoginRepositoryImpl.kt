@@ -1,6 +1,7 @@
 package com.uni.fsm.data.repository
 
 import com.uni.fsm.data.model.request.LoginRequest
+import com.uni.fsm.data.model.response.toDomain
 import com.uni.fsm.data.remote.LoginApiService
 import com.uni.fsm.domain.model.User
 import com.uni.fsm.domain.repository.LoginRepository
@@ -15,18 +16,10 @@ class LoginRepositoryImpl(
             if (response.isSuccessful && response.body()?.status == "success") {
                 val data = response.body()
                 if (data != null) {
-                    Result.success(
-                        User(
-                            user_id = data.user_id.orEmpty(),
-                            username = data.username.orEmpty(),
-                            email = data.email.orEmpty(),
-                            role = data.role.orEmpty()
-                        )
-                    )
+                    Result.success(data.toDomain())
                 } else {
                     Result.failure(Exception(response.body()?.message ?: "Login failed"))
                 }
-
             } else {
                 Result.failure(Exception(response.body()?.message ?: "Login failed"))
             }

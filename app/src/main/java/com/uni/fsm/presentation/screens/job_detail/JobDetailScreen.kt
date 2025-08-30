@@ -174,9 +174,9 @@ fun JobDetailUI(
 
         SectionCard(title = "Service Details") {
             Text("Category: ${job.category}")
-            Text("Date: ${job.date}")
-            Text("Time: ${job.time}")
-            Text("Created by: ${job.createdBy.username}")
+            Text("Created Date: ${job.date}")
+            Text("Created Time: ${job.time}")
+            Text("Created By: ${job.createdBy.username}")
         }
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -323,6 +323,7 @@ fun StatusChip(status: String) {
         "OnProcess" -> Color(0xFF4126CE)
         "Completed" -> Color(0xFF08960B)
         "Closed" -> Color(0xFF008080)
+        "Pending" -> Color(0xFF3A2802)
         else -> Color.LightGray
     }
 
@@ -334,10 +335,7 @@ fun StatusChip(status: String) {
             .padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
         Text(
-            text = status,
-            color = textColor,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Medium
+            text = status, color = textColor, fontSize = 12.sp, fontWeight = FontWeight.Medium
         )
     }
 }
